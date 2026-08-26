@@ -1,0 +1,79 @@
+package furniture_shop.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import furniture_shop.entity.User;
+import furniture_shop.repository.UserRepository;
+
+@Service
+public class UserServiceImpl implements UserService {
+
+    @Autowired
+    private UserRepository repository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Override
+    public User saveUser(User user) {
+
+        // Default role for new users
+        if (user.getRole() == null || user.getRole().isEmpty()) {
+            user.setRole("USER");
+        }
+
+        // Encrypt password
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        return repository.save(user);
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return repository.findAll();
+    }
+
+    @Override
+    public User getUserById(Long id) {
+        return repository.findById(id).orElse(null);
+    }
+
+    @Override
+    public User updateUser(Long id, User user) {
+
+        User existingUser = repository.findById(id).orElse(null);
+
+        if (existingUser != null) {
+
+            existingUser.setName(user.getName());
+            existingUser.setEmail(user.getEmail());
+
+            if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+                existingUser.setPassword(
+                    passwordEncoder.encode(user.getPassword())
+                );
+            }
+
+            existingUser.setPhone(user.getPhone());
+            existingUser.setAddress(user.getAddress());
+
+            // Keep existing role
+            if (user.getRole() != null && !user.getRole().isEmpty()) {
+                existingUser.setRole(user.getRole());
+            }
+
+            return repository.save(existingUser);
+        }
+
+        return null;
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+        repository.deleteById(id);
+    }
+}

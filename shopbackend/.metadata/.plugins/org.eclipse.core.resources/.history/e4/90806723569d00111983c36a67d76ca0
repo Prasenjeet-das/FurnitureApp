@@ -1,0 +1,281 @@
+package furniture_shop.config;
+
+import java.util.Arrays;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import furniture_shop.service.CustomUserDetailsService;
+
+@Configuration
+public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomUserDetailsService customUserDetailsService;
+
+    public SecurityConfig(
+            JwtAuthenticationFilter jwtAuthenticationFilter,
+            CustomUserDetailsService customUserDetailsService) {
+
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.customUserDetailsService = customUserDetailsService;
+    }
+
+    // =========================================================
+    // SECURITY FILTER CHAIN
+    // =========================================================
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http) throws Exception {
+
+        http
+
+            // =====================================================
+            // CORS
+            // =====================================================
+
+            .cors(cors ->
+                    cors.configurationSource(
+                            corsConfigurationSource()))
+
+            // =====================================================
+            // CSRF
+            // =====================================================
+
+            .csrf(csrf ->
+                    csrf.disable())
+
+            // =====================================================
+            // SESSION MANAGEMENT
+            // =====================================================
+
+            .sessionManagement(session ->
+                    session.sessionCreationPolicy(
+                            SessionCreationPolicy.STATELESS))
+
+            // =====================================================
+            // AUTHORIZATION
+            // =====================================================
+
+            .authorizeHttpRequests(auth -> auth
+
+                    // =================================================
+                    // PUBLIC APIs
+                    // =================================================
+
+                    // Login / Authentication
+                    .requestMatchers("/auth/**")
+                    .permitAll()
+
+                    // User registration
+                    .requestMatchers(
+                            HttpMethod.POST,
+                            "/users")
+                    .permitAll()
+
+                    // =================================================
+                    // PUBLIC PRODUCT APIs
+                    // =================================================
+
+                    // Anyone can view products
+                    .requestMatchers(
+                            HttpMethod.GET,
+                            "/products/**")
+                    .permitAll()
+
+                    // Anyone can view uploaded product images
+                    .requestMatchers(
+                            HttpMethod.GET,
+                            "/uploads/products/**")
+                    .permitAll()
+
+                    // =================================================
+                    // PRODUCT ADMIN APIs
+                    // =================================================
+
+                    // Add product - ADMIN ONLY
+                    .requestMatchers(
+                            HttpMethod.POST,
+                            "/products")
+                    .hasRole("ADMIN")
+
+                    // Update product - ADMIN ONLY
+                    .requestMatchers(
+                            HttpMethod.PUT,
+                            "/products/**")
+                    .hasRole("ADMIN")
+
+                    // Delete product - ADMIN ONLY
+                    .requestMatchers(
+                            HttpMethod.DELETE,
+                            "/products/**")
+                    .hasRole("ADMIN")
+
+                    // =================================================
+                    // PRODUCT IMAGE UPLOAD
+                    // =================================================
+
+                    // Upload image for a specific product - ADMIN ONLY
+                    //
+                    // Example:
+                    // POST /products/1/image
+                    //
+                    .requestMatchers(
+                            HttpMethod.POST,
+                            "/products/*/image")
+                    .hasRole("ADMIN")
+
+                    // =================================================
+                    // CATEGORY
+                    // =================================================
+
+                    .requestMatchers(
+                            "/categories/**")
+                    .hasRole("ADMIN")
+
+                    // =================================================
+                    // USERS
+                    // =================================================
+
+                    .requestMatchers(
+                            "/users/**")
+                    .hasRole("ADMIN")
+
+                    // =================================================
+                    // ORDERS
+                    // =================================================
+
+                    .requestMatchers(
+                            "/orders/**")
+                    .hasAnyRole("ADMIN", "USER")
+
+                    // =================================================
+                    // CART
+                    // =================================================
+
+                    .requestMatchers(
+                            "/cart/**")
+                    .hasRole("USER")
+
+                    // =================================================
+                    // WISHLIST
+                    // =================================================
+
+                    .requestMatchers(
+                            "/wishlist/**")
+                    .hasRole("USER")
+
+                    // =================================================
+                    // EVERYTHING ELSE
+                    // =================================================
+
+                    .anyRequest()
+                    .authenticated()
+            )
+
+            // =====================================================
+            // JWT FILTER
+            // =====================================================
+
+            .addFilterBefore(
+                    jwtAuthenticationFilter,
+                    UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+
+    // =========================================================
+    // PASSWORD ENCODER
+    // =========================================================
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+
+        return new BCryptPasswordEncoder();
+    }
+
+    // =========================================================
+    // AUTHENTICATION PROVIDER
+    // =========================================================
+
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+
+        DaoAuthenticationProvider provider =
+                new DaoAuthenticationProvider();
+
+        provider.setUserDetailsService(
+                customUserDetailsService);
+
+        provider.setPasswordEncoder(
+                passwordEncoder());
+
+        return provider;
+    }
+
+    // =========================================================
+    // AUTHENTICATION MANAGER
+    // =========================================================
+
+    @Bean
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration configuration)
+            throws Exception {
+
+        return configuration.getAuthenticationManager();
+    }
+
+    // =========================================================
+    // CORS CONFIGURATION
+    // =========================================================
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+
+        CorsConfiguration configuration =
+                new CorsConfiguration();
+
+        configuration.setAllowedOrigins(
+                Arrays.asList(
+                        "http://localhost:5173"
+                ));
+
+        configuration.setAllowedMethods(
+                Arrays.asList(
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "DELETE",
+                        "OPTIONS"
+                ));
+
+        configuration.setAllowedHeaders(
+                Arrays.asList("*"));
+
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+
+        source.registerCorsConfiguration(
+                "/**",
+                configuration);
+
+        return source;
+    }
+}

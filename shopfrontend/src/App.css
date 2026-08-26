@@ -1,0 +1,295 @@
+:root {
+    --shop-ink: #20252b;
+    --shop-muted: #68717a;
+    --shop-paper: #f7f5f0;
+    --shop-card: #ffffff;
+    --shop-accent: #d97745;
+    --shop-accent-dark: #a94f2d;
+    --shop-gold: #e4ab45;
+    --shop-brown: #2b1b12;
+    --shop-line: #e6e1d8;
+    --shop-shadow: 0 14px 35px rgba(32, 37, 43, 0.09);
+}
+
+body {
+    background: var(--shop-paper);
+    color: var(--shop-ink);
+}
+
+#root {
+    background: var(--shop-paper);
+}
+
+.navbar {
+    background: var(--shop-ink) !important;
+    padding: 1rem 0;
+    box-shadow: 0 3px 18px rgba(32, 37, 43, 0.16);
+}
+
+.navbar-brand {
+    color: #fff !important;
+    font-family: Georgia, serif;
+    font-size: 1.45rem;
+    white-space: nowrap;
+}
+
+.navbar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.navbar-actions .me-2 {
+    margin-right: 0 !important;
+}
+
+.navbar-actions .btn {
+    border: 0;
+    border-radius: 6px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    padding: 0.55rem 0.9rem;
+    transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.navbar-actions .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 16px rgba(0, 0, 0, 0.16);
+}
+
+.navbar-actions .btn-light {
+    background: #f8f7f3;
+    color: var(--shop-ink);
+}
+
+.navbar-actions .btn-warning {
+    background: var(--shop-gold);
+    color: #2d2416;
+}
+
+.navbar-actions .btn-info {
+    background: #91c9c4;
+    color: #173b3a;
+}
+
+.navbar-actions .btn-danger {
+    background: #c75c56;
+}
+
+.hero {
+    background: linear-gradient(115deg, #f1dfc4 0%, #f8f5ed 52%, #dce9e4 100%);
+    color: var(--shop-ink);
+    overflow: hidden;
+    padding: 5.5rem 0 4rem;
+}
+
+.hero h1 {
+    color: var(--shop-ink) !important;
+    font-family: Georgia, serif;
+    font-size: clamp(2.7rem, 5vw, 4.7rem);
+    line-height: 1.05;
+    margin: 1rem 0 1.5rem;
+}
+
+.hero p {
+    color: #4d555d;
+    font-size: 1.05rem;
+    line-height: 1.75;
+    max-width: 38rem;
+}
+
+.hero-copy {
+    border-left: 4px solid var(--shop-accent);
+    margin-bottom: 2rem;
+    padding-left: 1.1rem;
+}
+
+.hero img {
+    border-radius: 14px;
+    box-shadow: var(--shop-shadow);
+    aspect-ratio: 4 / 3;
+    display: block;
+    height: auto;
+    object-fit: cover;
+    width: 100%;
+}
+
+h1, h2, h3, h4, h5 {
+    color: var(--shop-ink);
+}
+
+h2, h3 {
+    font-family: Georgia, serif;
+}
+
+.card {
+    background: var(--shop-card);
+    border: 1px solid var(--shop-line);
+    border-radius: 8px;
+    box-shadow: 0 5px 18px rgba(32, 37, 43, 0.06) !important;
+}
+
+.card-img-top {
+    border-radius: 8px 8px 0 0;
+}
+
+.product-image-box {
+    overflow: hidden;
+    position: relative;
+}
+
+.featured-image::before {
+    background: radial-gradient(circle, rgba(228, 171, 69, 0.32), transparent 68%);
+    content: "";
+    inset: -20%;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    transition: opacity 260ms ease;
+    z-index: 1;
+}
+
+.featured-image .card-img-top {
+    position: relative;
+    transform: scale(1) rotate(0deg);
+    transition: transform 320ms cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 260ms ease;
+    z-index: 0;
+}
+
+.featured-image:hover::before,
+.featured-image:focus-within::before {
+    opacity: 1;
+}
+
+.featured-image:hover .card-img-top,
+.featured-image:focus-within .card-img-top {
+    box-shadow: inset 0 0 0 3px rgba(228, 171, 69, 0.95), inset 0 0 24px rgba(228, 171, 69, 0.38);
+    transform: scale(1.07) rotate(0.8deg);
+}
+
+.card-title {
+    overflow-wrap: anywhere;
+}
+
+.btn {
+    border-radius: 6px;
+    font-weight: 600;
+    transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn-warning {
+    background: var(--shop-gold);
+    border-color: var(--shop-gold);
+    color: var(--shop-brown);
+}
+
+.btn-success {
+    background: #4c8b68;
+    border-color: #4c8b68;
+}
+
+.text-success {
+    color: var(--shop-accent-dark) !important;
+}
+
+.why-box {
+    padding: 20px;
+    text-align: center;
+    transition: transform 180ms ease;
+}
+
+.why-box:hover {
+    transform: translateY(-5px);
+}
+
+footer {
+    background: var(--shop-ink) !important;
+    color: #e9e5dd;
+}
+
+.form-control,
+.form-select {
+    border-color: #d8d0c7;
+    min-height: 44px;
+}
+
+footer h4 {
+    color: #fff;
+    font-family: Georgia, serif;
+    margin-bottom: 15px;
+}
+
+footer p {
+    color: #c8c4bc;
+    margin: 6px 0;
+}
+
+footer a {
+    color: #f4c875 !important;
+    transition: color 180ms ease;
+}
+
+footer a:hover {
+    color: #fff !important;
+}
+
+footer hr {
+    border-color: #596168;
+}
+
+@media (max-width: 767.98px) {
+    .navbar .container {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .navbar-brand {
+        text-align: center;
+    }
+
+    .navbar-actions {
+        justify-content: center;
+    }
+
+    main.container,
+    .hero .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .hero {
+        padding: 3rem 0 2rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    .hero h1 {
+        font-size: 2.45rem;
+    }
+
+    .hero-copy {
+        padding-left: 0.85rem;
+    }
+
+    .hero img {
+        aspect-ratio: 4 / 3;
+        margin-top: 2rem !important;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    footer .row > div {
+        margin-bottom: 1.5rem;
+    }
+}

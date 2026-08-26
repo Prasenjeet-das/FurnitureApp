@@ -1,0 +1,7 @@
+node_modules/
+target/
+uploads/
+
+.env
+*.key
+application-local.properties
